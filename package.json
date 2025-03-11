@@ -1,0 +1,26 @@
+{
+  "name": "saml2-auth-app",
+  "version": "1.0.0",
+  "description": "SAML2 Authentication Application with Manual Processing",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "uuid": "^9.0.1",
+    "xml-crypto": "^6.0.0",
+    "xml2js": "^0.6.2",
+    "xmldom": "^0.6.0",
+    "xpath": "^0.0.34"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

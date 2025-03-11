@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .login-title {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .login-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .auth0-button {
+            background-color: #eb5424;
+            color: white;
+        }
+        .auth0-button:hover {
+            background-color: #d44a1e;
+        }
+        .login-button img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        .divider {
+            margin: 1.5rem 0;
+            border-top: 1px solid #eee;
+            position: relative;
+        }
+        .divider span {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 0 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">Welcome</h2>
+        <div class="login-options">
+            <a href="/auth/saml" class="login-button auth0-button">
+                <img src="https://cdn.auth0.com/styleguide/components/1.0.8/media/logos/img/badge.png" alt="Auth0 Logo">
+                Sign in with Auth0
+            </a>
+            <div class="divider">
+                <span>or</span>
+            </div>
+            <!-- Thêm các phương thức đăng nhập khác ở đây nếu cần -->
+        </div>
+    </div>
+</body>
+</html> 

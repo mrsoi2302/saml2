@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SAML2 Logout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .logout-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        button {
+            background-color: #dc3545;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <h2>SAML2 Logout</h2>
+        <form method="GET" action="<%= idpUrl %>">
+            <input type="hidden" name="SAMLRequest" value="<%= logoutRequest.base64Request %>" />
+            <input type="hidden" name="Signature" value="<%= logoutRequest.signature %>" />
+            <button type="submit">Confirm Logout</button>
+        </form>
+    </div>
+</body>
+</html> 

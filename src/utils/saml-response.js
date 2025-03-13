@@ -101,9 +101,13 @@ async function processLogoutResponse(logoutResponse) {
         throw new Error('Invalid logout response format');
     }
 
-    const status = parsedResponse['LogoutResponse']['Status']['StatusCode'].$.Value;
-    if (status !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
-        throw new Error('Logout failed: ' + status);
+    const statusCode = parsedResponse['LogoutResponse']['Status']['StatusCode'];
+    const statusValue = statusCode.Value || statusCode.$.Value;
+    
+    console.log('Logout Status:', statusValue);
+
+    if (statusValue.value !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
+        throw new Error(`Logout failed with status: ${statusValue}`);
     }
 
     return true;
@@ -162,20 +166,44 @@ function verifySignature(xml) {
         
         // Tạo select function với namespace
         const select = xpath.useNamespaces(namespaces);
+
+        // Kiểm tra loại message
+        const isLogoutResponse = select("//samlp:LogoutResponse", doc).length > 0;
+        const isLogoutRequest = select("//samlp:LogoutRequest", doc).length > 0;
+        const isSamlResponse = select("//samlp:Response", doc).length > 0;
         
-        // Lấy assertion node
-        const assertions = select("//saml:Assertion", doc);
-        if (!assertions.length) {
-            throw new Error('No assertion found');
-        }
-        const assertion = assertions[0];
+        let signatureNode;
+        let nodeToVerify;
         
-        // Lấy signature node từ assertion
-        const signatures = select(".//ds:Signature", assertion);
-        if (!signatures.length) {
-            throw new Error('No signature found in assertion');
+        if (isLogoutResponse) {
+            // Đối với Logout Response, lấy signature từ LogoutResponse
+            nodeToVerify = select("//samlp:LogoutResponse", doc)[0];
+            signatureNode = select(".//ds:Signature", nodeToVerify)[0];
+        } else if (isLogoutRequest) {
+            // Đối với Logout Request, lấy signature từ LogoutRequest
+            nodeToVerify = select("//samlp:LogoutRequest", doc)[0];
+            signatureNode = select(".//ds:Signature", nodeToVerify)[0];
+        } else if (isSamlResponse) {
+            // Đối với SAML Response, kiểm tra signature trong Response hoặc Assertion
+            const assertion = select("//saml:Assertion", doc)[0];
+            const response = select("//samlp:Response", doc)[0];
+            
+            // Ưu tiên kiểm tra signature trong Assertion nếu có
+            if (assertion && select(".//ds:Signature", assertion)[0]) {
+                nodeToVerify = assertion;
+                signatureNode = select(".//ds:Signature", assertion)[0];
+            } else {
+                // Nếu không có signature trong Assertion, kiểm tra trong Response
+                nodeToVerify = response;
+                signatureNode = select(".//ds:Signature", response)[0];
+            }
+        } else {
+            throw new Error('Unknown SAML message type');
         }
-        const signature = signatures[0];
+
+        if (!signatureNode) {
+            throw new Error('No signature found');
+        }
 
         // Tạo SignedXml object với ID attribute
         class IdSignedXml extends SignedXml {
@@ -198,10 +226,10 @@ function verifySignature(xml) {
         const sig = new IdSignedXml();
         
         // Load signature
-        sig.loadSignature(signature);
+        sig.loadSignature(signatureNode);
         
-        // Verify signature với assertion node
-        const isValid = sig.checkSignature(assertion.toString());
+        // Verify signature với node tương ứng
+        const isValid = sig.checkSignature(nodeToVerify.toString());
         
         if (!isValid) {
             throw new Error('Invalid signature');
